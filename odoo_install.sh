@@ -37,7 +37,7 @@ DB_USER=" "
 DB_PASSWORD=""
 #Used for restoring big databases since they take time to upload
 LIMIT_TIME_CPU="120"
-LIMIT_TIME_REAL="680"
+LIMIT_TIME_REAL="780"
 
 ##
 ###  WKHTMLTOPDF download links
