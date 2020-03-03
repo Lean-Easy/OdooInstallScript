@@ -33,8 +33,10 @@ OE_CONFIG="${OE_USER}-server"
 LOG_LEVEL="debug"
 DB_HOST=""
 DB_PORT="5432"
-DB_USER=" "
-DB_PASSWORD=""
+DB_USER=""
+#Two password variable, INIT password is used directly in a command so some characters will need to be escaped differently such as % which will need to be changed to %%
+DB_PASSWORD_INIT=''
+DB_PASSWORD_FILE=''
 #Used for restoring big databases since they take time to upload
 LIMIT_TIME_CPU="120"
 LIMIT_TIME_REAL="780"
@@ -161,8 +163,8 @@ sudo su root -c "printf 'log-level = ${LOG_LEVEL}\n' >> /etc/${OE_CONFIG}.conf"
 sudo su root -c "printf 'db_host = ${DB_HOST}\n' >> /etc/${OE_CONFIG}.conf"
 sudo su root -c "printf 'db_port = ${DB_PORT}\n' >> /etc/${OE_CONFIG}.conf"
 sudo su root -c "printf 'db_user = ${DB_USER}\n' >> /etc/${OE_CONFIG}.conf"
-sudo su root -c "printf 'db_password = ${DB_PASSWORD}\n' >> /etc/${OE_CONFIG}.conf"
-sudo su root -c "printf 'db_name = False\n' >> /etc/${OE_CONFIG}}.conf"
+sudo su root -c "printf 'db_password = ${DB_PASSWORD_FILE}\n' >> /etc/${OE_CONFIG}.conf"
+sudo su root -c "printf 'db_name = False\n' >> /etc/${OE_CONFIG}.conf"
 sudo su root -c "printf 'limit_time_cpu = ${LIMIT_TIME_CPU}\n' >> /etc/${OE_CONFIG}.conf"
 sudo su root -c "printf 'limit_time_real = ${LIMIT_TIME_REAL}\n' >> /etc/${OE_CONFIG}.conf"
 if [ $IS_ENTERPRISE = "True" ]; then
@@ -259,6 +261,13 @@ sudo update-rc.d $OE_CONFIG defaults
 
 echo -e "* Starting Odoo Service"
 sudo su root -c "/etc/init.d/$OE_CONFIG start"
+
+#Force initialisation of a database on the remote database
+echo -e "* Initialising odoo Database"
+sudo service odoo-server stop
+/odoo/odoo-server/odoo-bin --addons-path=/odoo/odoo-server/addons --database=odoo --db_user=$DB_USER --db_password=$DB_PASSWORD_INIT --db_host=$DB_HOST --db_port=$DB_PORT -i INIT --stop-after-init
+sudo service odoo-server start
+
 echo "-----------------------------------------------------------"
 echo "Done! The Odoo server is up and running. Specifications:"
 echo "Port: $OE_PORT"
