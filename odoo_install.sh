@@ -39,7 +39,7 @@ DB_PASSWORD_INIT=''
 DB_PASSWORD_FILE=''
 #Used for restoring big databases since they take time to upload
 LIMIT_TIME_CPU="120"
-LIMIT_TIME_REAL="780"
+LIMIT_TIME_REAL="1200"
 
 ##
 ###  WKHTMLTOPDF download links
